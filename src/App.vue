@@ -91,7 +91,9 @@ const totalCarrinho = computed(() => {
       <div class="destaque-info">
         <h2>Eric-Emanuel Schmitt</h2>
         <p>Descubra o novo livro do autor best-seller Eric-Emanuel Schmitt.</p>
-        <button class="botao-destaque">Adicionar ao carrinho</button>
+        <button @click="adicionarAoCarrinho(produtos[0])" class="botao-destaque">
+          Adicionar ao carrinho
+        </button>
       </div>
       <img
         src="https://m.media-amazon.com/images/I/81eB+7+CkUL.jpg"
@@ -128,7 +130,9 @@ const totalCarrinho = computed(() => {
           <h3>{{ item.nome }}</h3>
           <p>Quantidade: {{ item.quantidade }}</p>
           <p>Total: R$ {{ item.total.toFixed(2) }}</p>
-          <button @click="removerDoCarrinho(item.id)">Remover</button>
+          <button @click="removerDoCarrinho(item.id)" class="botao-remover">
+            Remover
+          </button>
         </div>
         <h3>Total do Carrinho: R$ {{ totalCarrinho }}</h3>
       </div>
@@ -173,6 +177,20 @@ const totalCarrinho = computed(() => {
   background-color: #0056b3;
 }
 
+.botao-remover {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.botao-remover:hover {
+  background-color: #c82333;
+}
+
 /* Estilo do carrinho */
 .carrinho {
   margin-top: 20px;
@@ -194,5 +212,62 @@ const totalCarrinho = computed(() => {
 .item h3 {
   font-size: 1.2rem;
   margin-bottom: 5px;
+}
+
+/* Estilo dos produtos */
+.produtos {
+  padding: 20px;
+}
+
+.produtos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.produto {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.produto-capa {
+  width: 100%;
+  height: 150px; /* Altura fixa para imagens menores */
+  object-fit: cover; /* Ajusta a imagem para caber no espaço */
+  border-bottom: 1px solid #ddd;
+}
+
+.produto-info {
+  padding: 10px;
+}
+
+.produto-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.preco {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+.botao-carrinho {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.botao-carrinho:hover {
+  background-color: #218838;
 }
 </style>
