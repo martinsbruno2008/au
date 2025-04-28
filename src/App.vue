@@ -1,157 +1,198 @@
+<script setup>
+import { ref, computed } from 'vue';
+
+// Lista de produtos
+const produtos = ref([
+  {
+    id: 1,
+    titulo: 'Chain of Iron: Volume 2',
+    resenha: 'Uma história épica de fantasia e mistério.',
+    preco: 62.24,
+    capa: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
+  },
+  {
+    id: 2,
+    titulo: 'Chain of Thorns',
+    resenha: 'A conclusão emocionante da série.',
+    preco: 65.24,
+    capa: 'https://m.media-amazon.com/images/I/81eB+7+CkUL.jpg',
+  },
+  {
+    id: 3,
+    titulo: 'City of Fallen Angels',
+    resenha: 'Uma nova aventura no mundo das sombras.',
+    preco: 45.15,
+    capa: 'https://m.media-amazon.com/images/I/91HHqVTAJQL.jpg',
+  },
+  {
+    id: 4,
+    titulo: 'Clockwork Princess',
+    resenha: 'O desfecho de uma trilogia inesquecível.',
+    preco: 49.14,
+    capa: 'https://m.media-amazon.com/images/I/81U6zN2D+JL.jpg',
+  },
+  {
+    id: 5,
+    titulo: 'Nona the Ninth',
+    resenha: 'Uma história de ficção científica intrigante.',
+    preco: 55.14,
+    capa: 'https://m.media-amazon.com/images/I/81a4kCNuH+L.jpg',
+  },
+]);
+
+// Carrinho de compras
+const carrinho = ref([]);
+
+// Variável para controlar a visibilidade do carrinho
+const mostrarCarrinho = ref(false);
+
+// Função para adicionar um produto ao carrinho
+const adicionarAoCarrinho = (produto) => {
+  const itemExistente = carrinho.value.find((item) => item.id === produto.id);
+  if (itemExistente) {
+    itemExistente.quantidade++;
+    itemExistente.total = itemExistente.quantidade * itemExistente.preco;
+  } else {
+    carrinho.value.push({
+      id: produto.id,
+      nome: produto.titulo,
+      preco: produto.preco,
+      quantidade: 1,
+      total: produto.preco,
+    });
+  }
+};
+
+// Função para remover um item do carrinho
+const removerDoCarrinho = (produtoId) => {
+  carrinho.value = carrinho.value.filter((item) => item.id !== produtoId);
+};
+
+// Função para calcular o total do carrinho
+const totalCarrinho = computed(() => {
+  return carrinho.value.reduce((acc, item) => acc + item.total, 0).toFixed(2);
+});
+</script>
+
 <template>
-  <div class="flex flex-col min-h-screen">
-    <!-- Navbar -->
-    <header class="bg-white shadow p-4 flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <img src="./assets/logo.svg" alt="Logo" class="h-8" />
-        <span class="font-bold text-green-600 text-xl">Ficcus</span>
+  <header class="header">
+    <div class="header-content">
+      <h1>Livraria Online</h1>
+      <p>Frete grátis para todo o Brasil em compras acima de R$50!</p>
+      <button @click="mostrarCarrinho = !mostrarCarrinho" class="botao-carrinho">
+        🛒 Carrinho ({{ carrinho.length }})
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Destaque -->
+    <section class="destaque">
+      <div class="destaque-info">
+        <h2>Eric-Emanuel Schmitt</h2>
+        <p>Descubra o novo livro do autor best-seller Eric-Emanuel Schmitt.</p>
+        <button class="botao-destaque">Adicionar ao carrinho</button>
       </div>
+      <img
+        src="https://m.media-amazon.com/images/I/81eB+7+CkUL.jpg"
+        alt="Livro em destaque"
+        class="destaque-capa"
+      />
+    </section>
 
-      <div class="flex items-center space-x-6">
-        <button @click="tela = 'home'" class="text-gray-700 hover:text-green-600">Home</button>
-        <button @click="tela = 'carrinho'" class="relative">
-          <img src="./assets/carrinhoicon.jpg" alt="Carrinho" class="h-8 w-8" />
-        </button>
-      </div>
-    </header>
-
-    <!-- Conteúdo -->
-    <main class="flex-1 bg-gray-50 p-8">
-      <!-- Tela Home -->
-      <div v-if="tela === 'home'">
-        <h1 class="text-3xl font-bold mb-6 text-green-600">Lançamentos</h1>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          <div
-            v-for="livro in livros"
-            :key="livro.id"
-            class="bg-white p-4 rounded shadow hover:shadow-lg flex flex-col"
-          >
-            <img :src="livro.imagem" alt="Livro" class="h-48 object-cover mb-4 rounded" />
-            <h3 class="font-bold text-lg">{{ livro.titulo }}</h3>
-            <p class="text-gray-600">{{ livro.autor }}</p>
-            <p class="text-green-600 font-bold mt-2">R$ {{ livro.preco.toFixed(2) }}</p>
-            <button
-              @click="adicionarAoCarrinho(livro)"
-              class="mt-auto bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4"
-            >
+    <!-- Lista de produtos -->
+    <section class="produtos">
+      <h2>Lançamentos</h2>
+      <div class="produtos-grid">
+        <div class="produto" v-for="produto in produtos" :key="produto.id">
+          <img :src="produto.capa" :alt="produto.titulo" class="produto-capa" />
+          <div class="produto-info">
+            <h3>{{ produto.titulo }}</h3>
+            <p class="preco">R$ {{ produto.preco.toFixed(2) }}</p>
+            <button @click="adicionarAoCarrinho(produto)" class="botao-carrinho">
               Comprar
             </button>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Tela Carrinho -->
-      <div v-else>
-        <h1 class="text-3xl font-bold mb-8 text-green-600">Carrinho</h1>
-
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="md:col-span-2 space-y-6">
-            <div
-              v-for="item in carrinho"
-              :key="item.id"
-              class="flex bg-white p-4 rounded shadow justify-between items-center"
-            >
-              <div class="flex items-center space-x-4">
-                <img :src="item.imagem" alt="Livro" class="h-24 w-20 object-cover rounded" />
-                <div>
-                  <h2 class="font-bold">{{ item.titulo }}</h2>
-                  <p class="text-gray-600">{{ item.autor }}</p>
-                  <p class="text-green-600 font-bold">R$ {{ item.preco.toFixed(2) }}</p>
-                </div>
-              </div>
-
-              <div class="flex items-center space-x-2">
-                <button @click="diminuir(item)" class="bg-gray-300 p-2 rounded">-</button>
-                <span>{{ item.quantidade }}</span>
-                <button @click="aumentar(item)" class="bg-gray-300 p-2 rounded">+</button>
-              </div>
-
-              <div class="font-bold text-gray-700">
-                R$ {{ (item.preco * item.quantidade).toFixed(2) }}
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white p-6 rounded shadow">
-            <h2 class="text-xl font-bold mb-4">Resumo</h2>
-            <div class="flex justify-between border-b py-2">
-              <span>Produtos</span>
-              <span>R$ {{ totalProdutos.toFixed(2) }}</span>
-            </div>
-            <div class="flex justify-between border-b py-2">
-              <span>Frete</span>
-              <span>Grátis</span>
-            </div>
-            <div class="flex justify-between font-bold py-2">
-              <span>Total</span>
-              <span>R$ {{ totalProdutos.toFixed(2) }}</span>
-            </div>
-            <button class="mt-6 w-full bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600">
-              Finalizar Compra
-            </button>
-          </div>
-        </div>
+    <!-- Carrinho de compras -->
+    <section v-if="mostrarCarrinho" class="carrinho">
+      <h2>Carrinho de Compras</h2>
+      <div v-if="carrinho.length === 0">
+        <p>O carrinho está vazio.</p>
       </div>
-    </main>
+      <div v-else>
+        <div class="item" v-for="item in carrinho" :key="item.id">
+          <h3>{{ item.nome }}</h3>
+          <p>Quantidade: {{ item.quantidade }}</p>
+          <p>Total: R$ {{ item.total.toFixed(2) }}</p>
+          <button @click="removerDoCarrinho(item.id)">Remover</button>
+        </div>
+        <h3>Total do Carrinho: R$ {{ totalCarrinho }}</h3>
+      </div>
+    </section>
+  </main>
 
-    <!-- Rodapé -->
-    <footer class="bg-green-600 text-white p-8 text-center">
-      <div>© Ficcus 2025 - Todos os direitos reservados</div>
-    </footer>
-  </div>
+  <footer class="footer">
+    <p>&copy; 2025 Livraria Online. Todos os direitos reservados.</p>
+  </footer>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue';
-
-const tela = ref('home');
-
-const livros = ref([
-  {
-    id: 1,
-    titulo: 'Chain of Iron Volume 2',
-    autor: 'Cassandra Clare',
-    preco: 62.24,
-    imagem: './assets/livros/livro1.jpeg',
-  },
-  {
-    id: 2,
-    titulo: 'Chain of Thorns',
-    autor: 'Cassandra Clare',
-    preco: 69.32,
-    imagem: './assets/livros/livro2.jpg',
-  },
-]);
-
-const carrinho = ref([]);
-
-function adicionarAoCarrinho(livro) {
-  const itemExistente = carrinho.value.find((item) => item.id === livro.id);
-  if (itemExistente) {
-    itemExistente.quantidade++;
-  } else {
-    carrinho.value.push({ ...livro, quantidade: 1 });
-  }
-  tela.value = 'carrinho';
+<style scoped>
+/* Estilo do cabeçalho */
+.header {
+  background-color: #f8f9fa;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-function aumentar(item) {
-  item.quantidade++;
+.header-content h1 {
+  font-size: 2.5rem;
+  color: #333;
 }
 
-function diminuir(item) {
-  if (item.quantidade > 1) {
-    item.quantidade--;
-  }
+.header-content p {
+  font-size: 1.2rem;
+  color: #555;
 }
 
-const totalProdutos = computed(() =>
-  carrinho.value.reduce((acc, item) => acc + item.preco * item.quantidade, 0)
-);
-</script>
+.botao-carrinho {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
 
+.botao-carrinho:hover {
+  background-color: #0056b3;
+}
 
+/* Estilo do carrinho */
+.carrinho {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+}
 
+.carrinho h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
 
+.item {
+  margin-bottom: 15px;
+}
 
+.item h3 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+</style>
